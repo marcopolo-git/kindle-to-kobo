@@ -31,6 +31,19 @@ a readable Markdown file.
 pip install lxml
 ```
 
+## Getting `My Clippings.txt` from your Kindle
+
+`My Clippings.txt` is a plain-text file the Kindle generates automatically,
+containing every highlight, note, and bookmark you've made across all books.
+
+1. Connect your Kindle to your computer with a USB cable.
+2. Wait for it to appear as a USB drive (on macOS: Finder; on Windows: File
+   Explorer; on Linux: your file manager or `/media/...`).
+3. Open the Kindle drive — `My Clippings.txt` is in the root `documents`
+   folder (path is typically `Kindle/documents/My Clippings.txt`).
+4. Copy the file to your computer.
+5. Safely eject the Kindle before unplugging it.
+
 ## Usage
 
 Export highlights to Markdown (no device needed):
@@ -88,3 +101,26 @@ that can't be matched with reasonable confidence are skipped and reported.
   book's EPUB, so accuracy depends on the Kobo/Calibre edition matching the
   Kindle edition closely enough for the text to be found.
 - The Kobo must be connected and mounted as a filesystem for `--import`.
+
+## Known limitations
+
+- **DRM-protected books cap the number of highlights.** Publishers can
+  limit how much of a book you're allowed to clip. Once you hit that cap,
+  Kindle replaces further highlights with a "You have reached the clipping
+  limit for this item" placeholder instead of the actual text. The script
+  filters out these placeholder entries, but the underlying highlights are
+  gone from `My Clippings.txt` and can't be recovered by this tool.
+- **Kindle location numbers are approximate.** Kindle "locations" are
+  estimated at ~128 characters each, so mapping a location to an exact spot
+  in the EPUB (used for Kobo bookmarks/notes) is approximate and may be off
+  by a sentence or two.
+- **Date parsing only handles French Kindle metadata.** `My Clippings.txt`
+  timestamps in other locales (e.g. English) aren't recognized and fall
+  back to the current time instead of the original annotation date.
+- **Title matching can fail or mismatch.** Books are matched between
+  Kindle, Kobo, and Calibre by title similarity; very different titles
+  (e.g. translated editions) may not match, or may match to the wrong book.
+- Text-based position lookup (used for Kobo highlights and all Calibre
+  annotations) requires the highlighted text to appear verbatim in the
+  target EPUB — retranslated, re-edited, or differently formatted editions
+  may fail to position correctly even when the book itself matches.
